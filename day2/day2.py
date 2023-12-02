@@ -5,7 +5,7 @@ input = []
 colors_max = {"red": 12, "green": 13, "blue": 14}
 colors = ("red", "green", "blue")
 
-with open("input1.txt", 'r') as file:
+with open("input.txt", 'r') as file:
     while True:
         line = file.readline()
 
@@ -29,23 +29,28 @@ for line in input:
     game_number = re.search(r'\d+', line)
     line = line.replace(str(game_number.group()) + ": ", "")
     set_list = line.split(";")
+    count = 0
 
     for s in set_list:
+        s = s.replace(",", "")
+        s = s.split(" ")
 
         colors_count = {"red": 0, "green": 0, "blue": 0}
         colors_check = {"red": True, "green": True, "blue": True}
+
         for color in colors:
-            for match in re.finditer(color, s):
-                idx = match.start() - 4
-                number = re.search(r'\d+', s[idx:])
-                print(color, number)
-                colors_count[color] += int(number.group())
-            colors_check[color] = check_color(color, colors_max, colors_count[color])
+            try:
+                colors_count[color] += int(s[s.index(color)-1])
+                colors_check[color] = check_color(color, colors_max, colors_count[color])
+            except ValueError:
+                pass
 
         if False in colors_check.values():
+            count +=1
             break
 
-    total += int(game_number.group())
+    if count < 1:
+        total += int(game_number.group())
 
 
 print(total)
